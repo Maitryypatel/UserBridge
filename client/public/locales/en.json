@@ -1,0 +1,23 @@
+{
+  "faq_management": "FAQ Management",
+  "search_faq": "Search FAQ",
+  "all_categories": "All Categories",
+  "general": "General",
+  "account_management": "Account Management",
+  "role_permissions": "Role & Permissions",
+  "security_privacy": "Security & Privacy",
+  "troubleshooting": "Troubleshooting",
+  "add_faq": "Add FAQ",
+  "loading_faqs": "Loading FAQs...",
+  "no_faqs": "No FAQs found",
+  "edit": "Edit",
+  "delete": "Delete",
+  "previous": "Previous",
+  "next": "Next",
+  "page": "Page",
+  "of": "of",
+  "confirm_delete": "Are you sure you want to delete this FAQ?",
+  "select_language": "Select Language",
+  "no_question_available": "No question available",
+  "no_answer_available": "No answer available"
+}

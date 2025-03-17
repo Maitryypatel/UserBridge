@@ -1,0 +1,21 @@
+{
+  "faq_management": "एफएक्यू प्रबंधन",
+  "search_faq": "एफएक्यू खोजें",
+  "all_categories": "सभी श्रेणियां",
+  "general": "सामान्य",
+  "account_management": "खाता प्रबंधन",
+  "role_permissions": "भूमिका और अनुमतियाँ",
+  "security_privacy": "सुरक्षा और गोपनीयता",
+  "troubleshooting": "समस्या निवारण",
+  "add_faq": "एफएक्यू जोड़ें",
+  "loading_faqs": "एफएक्यू लोड हो रहे हैं...",
+  "no_faqs": "कोई एफएक्यू नहीं मिला",
+  "edit": "संपादित करें",
+  "delete": "हटाएं",
+  "previous": "पिछला",
+  "next": "अगला",
+  "page": "पृष्ठ",
+  "of": "का",
+  "confirm_delete": "क्या आप वाकई इस एफएक्यू को हटाना चाहते हैं?",
+  "select_language": "भाषा चुनें"
+}
