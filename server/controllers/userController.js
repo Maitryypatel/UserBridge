@@ -4,19 +4,19 @@ import userModel from "../models/userModel.js";
 // Update user profile
 export const updateUserProfile = async (req, res) => {
   try {
-    console.log("🔍 Checking authentication data:", req.user);
+    console.log(" Checking authentication data:", req.user);
 
     // Ensure user is authenticated
     if (!req.user || !req.user.id) {
       return res.status(401).json({ success: false, message: "User not authenticated" });
     }
 
-    const userId = req.user.id; // Change `_id` to `id` to match JWT payload
+    const userId = req.user.id; 
     const { jobRole } = req.body;
 
-    // Check uploaded file
+   
     const profilePicture = req.file ? req.file.filename : null;
-    console.log("📸 Uploaded Profile Picture:", profilePicture);
+    console.log(" Uploaded Profile Picture:", profilePicture);
 
     // Validate MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -37,7 +37,7 @@ export const updateUserProfile = async (req, res) => {
 
     res.status(200).json({ success: true, message: "Profile updated successfully", user });
   } catch (error) {
-    console.error("❌ Error updating user profile:", error);
+    console.error(" Error updating user profile:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
