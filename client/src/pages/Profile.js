@@ -98,7 +98,7 @@ const ProfilePage = () => {
               src={
                 userData.profilePicture.startsWith("http")
                   ? userData.profilePicture
-                  : `http://localhost:4000/uploads/${userData.profilePicture}`
+                  :  `https://userbridge-2.onrender.com/uploads/${userData.profilePicture}`
               }
               alt="Profile"
               className="w-full h-full object-cover"
