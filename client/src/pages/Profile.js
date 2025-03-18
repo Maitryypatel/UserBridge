@@ -50,19 +50,22 @@ const ProfilePage = () => {
     }
 
     try {
-        const response = await axios.put("http://localhost:4000/api/user/update-profile", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true, 
-        });
+      // Check if token is correct and log the token
+      console.log("Token from localStorage:", token);
 
-        const updatedUser = response.data.user;
-        setUser(updatedUser);
-        setUserData((prev) => ({ ...prev, profilePicture: updatedUser.profilePicture }));
-        setPreview(null);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+      const response = await axios.put("https://userbridge-2.onrender.com/api/user/update-profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,  // Send token in Authorization header
+        },
+        withCredentials: true, 
+      });
+
+      const updatedUser = response.data.user;
+      setUser(updatedUser);
+      setUserData((prev) => ({ ...prev, profilePicture: updatedUser.profilePicture }));
+      setPreview(null);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
     } catch (error) {
         console.error("❌ Error updating profile:", error?.response?.data?.message || "Update failed");
         if (error.response?.status === 401) {
@@ -71,8 +74,7 @@ const ProfilePage = () => {
     } finally {
         setIsLoading(false);
     }
-};
-
+  };
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -85,11 +87,9 @@ const ProfilePage = () => {
             <img src={preview} alt="Preview" className="w-full h-full object-cover" />
           ) : userData.profilePicture ? (
             <img
-              src={
-                userData.profilePicture.startsWith("http")
-                  ? userData.profilePicture
-                  : `http://localhost:4000/uploads/${userData.profilePicture}`
-              }
+              src={userData.profilePicture.startsWith("http")
+                ? userData.profilePicture
+                : `https://userbridge-2.onrender.com/uploads/${userData.profilePicture}`}
               alt="Profile"
               className="w-full h-full object-cover"
             />
