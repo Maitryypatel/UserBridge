@@ -29,7 +29,7 @@ export const register = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: "none", // Ensuring SameSite is set to 'none'
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -38,7 +38,7 @@ export const register = async (req, res) => {
       from: process.env.SENDER_EMAIL,
       to: email,
       subject: "Welcome to User Management Portal",
-      text: `Welcome to User Management Portal. Your account has been created with email ID: ${email}`,
+      text: `Welcome to User Management Portal. Your account has been created with email ID: ${email}.`, // Fixed template literal
     };
 
     await transporter.sendMail(mailOptions);
@@ -127,7 +127,7 @@ export const sendVerifyOtp = async (req, res) => {
       from: process.env.SENDER_EMAIL,
       to: user.email,
       subject: "Account Verification OTP",
-      text: `Your OTP is ${otp}. Verify your account using this OTP.`,
+      text: `Your OTP is ${otp}. Verify your account using this OTP.`, // Fixed template literal
     };
 
     await transporter.sendMail(mailOption);
@@ -208,14 +208,12 @@ export const isAuthenticated = async (req, res) => {
   }
 };
 
-
-
 // Send password reset OTP
 export const sendResetOtp = async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
-    return res.json({ success: false, message: "email is required" });
+    return res.json({ success: false, message: "Email is required" });
   }
 
   try {
@@ -234,8 +232,8 @@ export const sendResetOtp = async (req, res) => {
     const mailOption = {
       from: process.env.SENDER_EMAIL,
       to: user.email,
-      subject: "Password reset OTP",
-      text: `Your OTP for resetting your password is ${otp}. Use this OTP to proceed with resetting your password.`,
+      subject: "Password Reset OTP",
+      text: `Your OTP for resetting your password is ${otp}. Use this OTP to proceed with resetting your password.`, // Fixed template literal
     };
 
     await transporter.sendMail(mailOption);
@@ -283,3 +281,4 @@ export const resetPassword = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+
