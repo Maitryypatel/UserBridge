@@ -1,38 +1,31 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import axios from "axios";
 import { toast } from "react-toastify";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login } = useAuth(); // AuthContext function
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
     try {
-      const response = await axios.post(
-        "http://localhost:4000/api/auth/login",
-        { email, password },
-        { withCredentials: true }
-      );
-
-      if (response.data.success) {
-        await login(email, password); 
+      const res = await login(email, password); // Calls the `login` function in AuthContext
+      
+      if (res.success) {
         toast.success("Login successful!");
         navigate("/"); 
       } else {
-        toast.error(response.data.message || "Invalid credentials");
+        toast.error(res.message || "Invalid credentials");
       }
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error(
-        error.response?.data?.message || "Something went wrong. Please try again."
-      );
+      console.error("❌ Login error:", error);
+      toast.error(error?.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const AuthContext = createContext();
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const API_URL = process.env.REACT_APP_API_URL || "https://userbridge-2.onrender.com";
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -11,15 +11,21 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // ✅ Fetch Latest User Data
+  // ✅ Check Authentication Status
   const checkAuthStatus = useCallback(async () => {
     setLoading(true);
     try {
       console.log("🔍 Checking authentication...");
+      const res = await axios.post(
+        `${API_URL}/api/auth/is-auth`,
+        {},
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
 
-      const res = await axios.post(`${API_URL}/api/auth/is-auth`, {}, { withCredentials: true });
-      
-      console.log("✅ Auth API Response:", res.status, res.data);  // Logs full API response
+      console.log("✅ Auth API Response:", res.status, res.data);
 
       if (res.data.success) {
         setIsAuthenticated(true);
@@ -46,7 +52,14 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(async (email, password) => {
     try {
       console.log("🔑 Attempting login...");
-      const res = await axios.post(`${API_URL}/api/auth/login`, { email, password }, { withCredentials: true });
+      const res = await axios.post(
+        `${API_URL}/api/auth/login`,
+        { email, password },
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
 
       console.log("✅ Login Response:", res.data);
 
@@ -67,7 +80,14 @@ export const AuthProvider = ({ children }) => {
   const register = useCallback(async (email, password) => {
     try {
       console.log("📝 Attempting registration...");
-      const res = await axios.post(`${API_URL}/api/auth/register`, { email, password }, { withCredentials: true });
+      const res = await axios.post(
+        `${API_URL}/api/auth/register`,
+        { email, password },
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
 
       console.log("✅ Register Response:", res.data);
 
@@ -88,7 +108,11 @@ export const AuthProvider = ({ children }) => {
   const logout = useCallback(async () => {
     try {
       console.log("🚪 Logging out...");
-      await axios.post(`${API_URL}/api/auth/logout`, {}, { withCredentials: true });
+      await axios.post(
+        `${API_URL}/api/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
 
       setIsAuthenticated(false);
       setUser(null);
@@ -101,57 +125,54 @@ export const AuthProvider = ({ children }) => {
   // ✅ Update Profile Function
   const updateProfile = useCallback(async (updatedData) => {
     try {
-        console.log("📝 Updating profile...");
+      console.log("📝 Updating profile...");
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("⚠️ No authentication token found!");
+        return { success: false, message: "Unauthorized. Please log in again." };
+      }
 
-        const token = localStorage.getItem("token"); // Get token from localStorage
-        if (!token) {
-            console.warn("⚠️ No authentication token found!");
-            return { success: false, message: "Unauthorized. Please log in again." };
-        }
+      let config = {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+        withCredentials: true
+      };
 
-        let config = {
-            headers: {
-                "Authorization": `Bearer ${token}`,  // Attach token
-            },
-            withCredentials: true,
-        };
+      let res;
+      if (updatedData instanceof FormData) {
+        config.headers["Content-Type"] = "multipart/form-data";
+        res = await axios.put(`${API_URL}/api/user/update-profile`, updatedData, config);
+      } else {
+        res = await axios.put(`${API_URL}/api/user/update-profile`, updatedData, config);
+      }
 
-        let res;
-        if (updatedData instanceof FormData) {
-            // If it's FormData (for file uploads), set correct headers
-            config.headers["Content-Type"] = "multipart/form-data";
-            res = await axios.put(`${API_URL}/api/user/update-profile`, updatedData, config);
-        } else {
-            res = await axios.put(`${API_URL}/api/user/update-profile`, updatedData, config);
-        }
+      console.log("✅ Update Profile Response:", res.data);
 
-        console.log("✅ Update Profile Response:", res.data);
-
-        if (res.data.success) {
-            setUser(res.data.user);  // Update user state
-            return { success: true, message: "Profile updated successfully!" };
-        } else {
-            console.warn("⚠️ Profile update failed:", res.data.message);
-            return { success: false, message: res.data.message || "Profile update failed." };
-        }
+      if (res.data.success) {
+        setUser(res.data.user);
+        return { success: true, message: "Profile updated successfully!" };
+      } else {
+        console.warn("⚠️ Profile update failed:", res.data.message);
+        return { success: false, message: res.data.message || "Profile update failed." };
+      }
     } catch (error) {
-        console.error("❌ Profile update error:", error?.response?.data?.message || "Network error.");
-        return { success: false, message: error?.response?.data?.message || "Profile update failed." };
+      console.error("❌ Profile update error:", error?.response?.data?.message || "Network error.");
+      return { success: false, message: error?.response?.data?.message || "Profile update failed." };
     }
-}, []);
-
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ 
-      isAuthenticated, 
-      user, 
-      setUser, 
-      login, 
-      register, 
-      logout, 
-      updateProfile, 
-      loading, 
-      checkAuthStatus 
+    <AuthContext.Provider value={{
+      isAuthenticated,
+      user,
+      setUser,
+      login,
+      register,
+      logout,
+      updateProfile,
+      loading,
+      checkAuthStatus
     }}>
       {children}
     </AuthContext.Provider>
