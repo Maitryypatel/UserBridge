@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
 
 const ProfilePage = () => {
   const { user, setUser } = useAuth();
@@ -43,36 +43,43 @@ const ProfilePage = () => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-        console.error("⚠️ No token found! Please log in again.");
-        alert("Session expired. Please log in again.");
-        setIsLoading(false);
-        return;
+      console.error("⚠️ No token found! Please log in again.");
+      alert("Session expired. Please log in again.");
+      setIsLoading(false);
+      return;
     }
 
     try {
-      // Check if token is correct and log the token
-      console.log("Token from localStorage:", token);
-
-      const response = await axios.put("https://userbridge-2.onrender.com/api/user/update-profile", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,  // Send token in Authorization header
-        },
-        withCredentials: true, 
-      });
+      const response = await axios.put(
+        "https://userbridge-2.onrender.com/api/user/update-profile",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
 
       const updatedUser = response.data.user;
       setUser(updatedUser);
-      setUserData((prev) => ({ ...prev, profilePicture: updatedUser.profilePicture }));
+      setUserData((prev) => ({
+        ...prev,
+        profilePicture: updatedUser.profilePicture,
+      }));
       setPreview(null);
       localStorage.setItem("user", JSON.stringify(updatedUser));
     } catch (error) {
-        console.error("❌ Error updating profile:", error?.response?.data?.message || "Update failed");
-        if (error.response?.status === 401) {
-            alert("Unauthorized. Please log in again.");
-        }
+      console.error(
+        " Error updating profile:",
+        error?.response?.data?.message || "Update failed"
+      );
+      if (error.response?.status === 401) {
+        alert("Unauthorized. Please log in again.");
+      }
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -84,12 +91,18 @@ const ProfilePage = () => {
       <div className="mb-4 text-center">
         <div className="w-32 h-32 mx-auto rounded-full border border-gray-300 overflow-hidden">
           {preview ? (
-            <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+            <img
+              src={preview}
+              alt="Preview"
+              className="w-full h-full object-cover"
+            />
           ) : userData.profilePicture ? (
             <img
-              src={userData.profilePicture.startsWith("http")
-                ? userData.profilePicture
-                : `https://userbridge-2.onrender.com/uploads/${userData.profilePicture}`}
+              src={
+                userData.profilePicture.startsWith("https")
+                  ? userData.profilePicture
+                  : `https://userbridge-2.onrender.com/uploads/${userData.profilePicture}`
+              }
               alt="Profile"
               className="w-full h-full object-cover"
             />
@@ -99,7 +112,11 @@ const ProfilePage = () => {
             </div>
           )}
         </div>
-        <input type="file" onChange={handleImageChange} className="mt-2 block w-full" />
+        <input
+          type="file"
+          onChange={handleImageChange}
+          className="mt-2 block w-full"
+        />
       </div>
 
       {/* Name */}
@@ -119,7 +136,9 @@ const ProfilePage = () => {
         <input
           type="text"
           value={userData.jobRole}
-          onChange={(e) => setUserData({ ...userData, jobRole: e.target.value })}
+          onChange={(e) =>
+            setUserData({ ...userData, jobRole: e.target.value })
+          }
           className="w-full p-2 border border-gray-300 rounded"
         />
       </div>
@@ -136,3 +155,6 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+
+//`https://userbridge-2.onrender.com/uploads/${userData.profilePicture}`}
+//"https://userbridge-2.onrender.com/api/user/update-profile

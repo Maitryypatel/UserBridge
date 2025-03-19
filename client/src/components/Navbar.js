@@ -61,7 +61,7 @@ export default function Navbar() {
                     src={
                       profilePic.startsWith("http")
                         ? profilePic
-                        : `http://localhost:4000/uploads/${profilePic}`
+                        : `https://userbridge-2.onrender.com/uploads/${profilePic}`
                     }
                     alt="Profile"
                     className="w-11 h-11 rounded-full border border-gray-300"

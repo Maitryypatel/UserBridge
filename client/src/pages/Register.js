@@ -10,7 +10,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false); // ✅ Prevent multiple submissions
   const navigate = useNavigate();
 
-  const API_URL = process.env.REACT_APP_API_URL || import.meta.env?.VITE_API_URL || "http://localhost:4000";
+  const API_URL = process.env.REACT_APP_API_URL || import.meta.env?.VITE_API_URL || "https://userbridge-2.onrender.com";
 
 
   const handleSubmit = async (e) => {

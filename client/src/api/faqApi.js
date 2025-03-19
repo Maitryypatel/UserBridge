@@ -1,15 +1,15 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:4000/api/faq";
+const API_URL = "https://userbridge-2.onrender.com/api/faq";
 
-// ✅ Fetch FAQs with Pagination, Search, and Language
+//  Fetch FAQs with Pagination, Search, and Language
 export const fetchFAQs = async ({ page = 1, limit = 10, search = "", category = "", language = "en" } = {}) => {
   try {
     const response = await axios.get(API_URL, {
       params: { page, limit, search, category, language },  // Pass language to the backend
     });
 
-    // ✅ Ensure response contains a valid array
+    //  Ensure response contains a valid array
     if (!Array.isArray(response.data.faqs)) {
       return { faqs: [], totalPages: 1 };
     }
@@ -17,7 +17,7 @@ export const fetchFAQs = async ({ page = 1, limit = 10, search = "", category = 
     return response.data;
   } catch (error) {
     console.error("Error fetching FAQs:", error.response?.data || error.message);
-    return { faqs: [], totalPages: 1 }; // ✅ Fallback to prevent crashes
+    return { faqs: [], totalPages: 1 }; //  Fallback to prevent crashes
   }
 };
 
