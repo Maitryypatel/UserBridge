@@ -54,13 +54,17 @@ const ProfilePage = () => {
       );
 
       const updatedUser = response.data.user;
-      setUser(updatedUser);
+      setUser(updatedUser); // Update user in AuthContext
       setUserData((prev) => ({ ...prev, profilePicture: updatedUser.profilePicture }));
       setPreview(null);
+      alert("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error?.response?.data?.message || "Update failed");
       if (error.response?.status === 401) {
         alert("Unauthorized. Please log in again.");
+        window.location.href = "/login"; // Redirect to login page
+      } else {
+        alert(error?.response?.data?.message || "An error occurred while updating the profile.");
       }
     } finally {
       setIsLoading(false);

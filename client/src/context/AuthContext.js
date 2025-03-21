@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // ✅ Check Authentication Status
   const checkAuthStatus = useCallback(async () => {
     setLoading(true);
     try {
@@ -36,7 +35,10 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
       }
     } catch (error) {
-      console.error("❌ Auth check failed:", error?.response?.data?.message || "Network error.");
+      console.error(
+        "❌ Auth check failed:",
+        error?.response?.data?.message || "Network error. Please check your connection."
+      );
       setIsAuthenticated(false);
       setUser(null);
     } finally {
@@ -48,7 +50,6 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
-  // ✅ Login Function
   const login = useCallback(
     async (email, password) => {
       try {
@@ -67,6 +68,7 @@ export const AuthProvider = ({ children }) => {
         if (res.data.success) {
           setIsAuthenticated(true);
           setUser(res.data.user);
+          console.log("✅ User authenticated:", res.data.user);
           navigate("/");
         }
 
@@ -82,88 +84,34 @@ export const AuthProvider = ({ children }) => {
     [navigate]
   );
 
-  // ✅ Register Function
-  const register = useCallback(
-    async (name, email, password) => {
-      try {
-        console.log("📝 Attempting registration...");
-        const res = await axios.post(
-          `${API_URL}/api/auth/register`,
-          { name, email, password },
-          {
-            withCredentials: true,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        console.log("✅ Register Response:", res.data);
-
-        if (res.data.success) {
-          setIsAuthenticated(true);
-          setUser(res.data.user);
-          navigate("/");
-        }
-
-        return res.data;
-      } catch (error) {
-        console.error("❌ Registration failed:", error?.response?.data?.message || "Network error.");
-        return {
-          success: false,
-          message: error?.response?.data?.message || "Registration failed. Please try again.",
-        };
-      }
-    },
-    [navigate]
-  );
-
-  // ✅ Logout Function
-  const logout = useCallback(async () => {
-    try {
-      console.log("🚪 Logging out...");
-      await axios.post(
-        `${API_URL}/api/auth/logout`,
-        {},
-        { withCredentials: true }
-      );
-
-      setIsAuthenticated(false);
-      setUser(null);
-      navigate("/login");
-    } catch (error) {
-      console.error("❌ Logout failed:", error?.response?.data?.message || "Network error.");
-    }
-  }, [navigate]);
-
-  // ✅ Update Profile Function (Modified to use Cookies)
   const updateProfile = useCallback(async (updatedData) => {
+    setLoading(true);
     try {
       console.log("📝 Updating profile...");
 
-      let config = {
-        headers: {},
-        withCredentials: true, // Ensure cookies are sent with the request
+      const config = {
+        headers: {
+          "Content-Type": updatedData instanceof FormData ? "multipart/form-data" : "application/json",
+        },
+        withCredentials: true,
       };
 
-      let res;
-      if (updatedData instanceof FormData) {
-        // If it's FormData (for file uploads), set correct headers
-        config.headers["Content-Type"] = "multipart/form-data";
-      }
-
-      res = await axios.put(`${API_URL}/api/user/update-profile`, updatedData, config);
+      const res = await axios.put(`${API_URL}/api/user/update-profile`, updatedData, config);
 
       console.log("✅ Update Profile Response:", res.data);
 
       if (res.data.success) {
-        setUser(res.data.user); // Update user state
+        setUser(res.data.user);
         return { success: true, message: "Profile updated successfully!" };
       } else {
-        console.warn(" Profile update failed:", res.data.message);
+        console.warn("⚠️ Profile update failed:", res.data.message);
         return { success: false, message: res.data.message || "Profile update failed." };
       }
     } catch (error) {
-      console.error(" Profile update error:", error?.response?.data?.message || "Network error.");
+      console.error("❌ Profile update error:", error?.response?.data?.message || "Network error.");
       return { success: false, message: error?.response?.data?.message || "Profile update failed." };
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -174,8 +122,6 @@ export const AuthProvider = ({ children }) => {
         user,
         setUser,
         login,
-        register,
-        logout,
         updateProfile,
         loading,
         checkAuthStatus,
