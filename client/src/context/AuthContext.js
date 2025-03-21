@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
         {},
         {
           withCredentials: true,
-          headers: { "Content-Type": "application/json" }
+          headers: { "Content-Type": "application/json" },
         }
       );
 
@@ -49,60 +49,72 @@ export const AuthProvider = ({ children }) => {
   }, [checkAuthStatus]);
 
   // ✅ Login Function
-  const login = useCallback(async (email, password) => {
-    try {
-      console.log("🔑 Attempting login...");
-      const res = await axios.post(
-        `${API_URL}/api/auth/login`,
-        { email, password },
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" }
+  const login = useCallback(
+    async (email, password) => {
+      try {
+        console.log("🔑 Attempting login...");
+        const res = await axios.post(
+          `${API_URL}/api/auth/login`,
+          { email, password },
+          {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        console.log("✅ Login Response:", res.data);
+
+        if (res.data.success) {
+          setIsAuthenticated(true);
+          setUser(res.data.user);
+          navigate("/");
         }
-      );
 
-      console.log("✅ Login Response:", res.data);
-
-      if (res.data.success) {
-        setIsAuthenticated(true);
-        setUser(res.data.user);
-        navigate("/");
+        return res.data;
+      } catch (error) {
+        console.error("❌ Login failed:", error?.response?.data?.message || "Network error.");
+        return {
+          success: false,
+          message: error?.response?.data?.message || "Login failed. Please try again.",
+        };
       }
-
-      return res.data;
-    } catch (error) {
-      console.error(" Login failed:", error?.response?.data?.message || "Network error.");
-      return { success: false, message: error?.response?.data?.message || "Login failed. Please try again." };
-    }
-  }, [navigate]);
+    },
+    [navigate]
+  );
 
   // ✅ Register Function
-  const register = useCallback(async (email, password) => {
-    try {
-      console.log("📝 Attempting registration...");
-      const res = await axios.post(
-        `${API_URL}/api/auth/register`,
-        { email, password },
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" }
+  const register = useCallback(
+    async (name, email, password) => {
+      try {
+        console.log("📝 Attempting registration...");
+        const res = await axios.post(
+          `${API_URL}/api/auth/register`,
+          { name, email, password },
+          {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        console.log("✅ Register Response:", res.data);
+
+        if (res.data.success) {
+          setIsAuthenticated(true);
+          setUser(res.data.user);
+          navigate("/");
         }
-      );
 
-      console.log("✅ Register Response:", res.data);
-
-      if (res.data.success) {
-        setIsAuthenticated(true);
-        setUser(res.data.user);
-        navigate("/");
+        return res.data;
+      } catch (error) {
+        console.error("❌ Registration failed:", error?.response?.data?.message || "Network error.");
+        return {
+          success: false,
+          message: error?.response?.data?.message || "Registration failed. Please try again.",
+        };
       }
-
-      return res.data;
-    } catch (error) {
-      console.error(" Registration failed:", error?.response?.data?.message || "Network error.");
-      return { success: false, message: error?.response?.data?.message || "Registration failed. Please try again." };
-    }
-  }, [navigate]);
+    },
+    [navigate]
+  );
 
   // ✅ Logout Function
   const logout = useCallback(async () => {
@@ -123,57 +135,55 @@ export const AuthProvider = ({ children }) => {
   }, [navigate]);
 
   // ✅ Update Profile Function
-  const updateProfile = useCallback(async (updatedData) => {
-    try {
-      console.log("📝 Updating profile...");
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.warn(" No authentication token found!");
-        return { success: false, message: "Unauthorized. Please log in again." };
+  const updateProfile = useCallback(
+    async (updatedData) => {
+      try {
+        console.log("📝 Updating profile...");
+        const res = await axios.put(
+          `${API_URL}/api/user/update-profile`,
+          updatedData,
+          {
+            withCredentials: true,
+            headers: {
+              "Content-Type": updatedData instanceof FormData ? "multipart/form-data" : "application/json",
+            },
+          }
+        );
+
+        console.log("✅ Update Profile Response:", res.data);
+
+        if (res.data.success) {
+          setUser(res.data.user);
+          return { success: true, message: "Profile updated successfully!" };
+        } else {
+          console.warn("⚠️ Profile update failed:", res.data.message);
+          return { success: false, message: res.data.message || "Profile update failed." };
+        }
+      } catch (error) {
+        console.error("❌ Profile update error:", error?.response?.data?.message || "Network error.");
+        return {
+          success: false,
+          message: error?.response?.data?.message || "Profile update failed.",
+        };
       }
-
-      let config = {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        },
-        withCredentials: true
-      };
-
-      let res;
-      if (updatedData instanceof FormData) {
-        config.headers["Content-Type"] = "multipart/form-data";
-        res = await axios.put(`${API_URL}/api/user/update-profile`, updatedData, config);
-      } else {
-        res = await axios.put(`${API_URL}/api/user/update-profile`, updatedData, config);
-      }
-
-      console.log(" Update Profile Response:", res.data);
-
-      if (res.data.success) {
-        setUser(res.data.user);
-        return { success: true, message: "Profile updated successfully!" };
-      } else {
-        console.warn(" Profile update failed:", res.data.message);
-        return { success: false, message: res.data.message || "Profile update failed." };
-      }
-    } catch (error) {
-      console.error("Profile update error:", error?.response?.data?.message || "Network error.");
-      return { success: false, message: error?.response?.data?.message || "Profile update failed." };
-    }
-  }, []);
+    },
+    []
+  );
 
   return (
-    <AuthContext.Provider value={{
-      isAuthenticated,
-      user,
-      setUser,
-      login,
-      register,
-      logout,
-      updateProfile,
-      loading,
-      checkAuthStatus
-    }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        setUser,
+        login,
+        register,
+        logout,
+        updateProfile,
+        loading,
+        checkAuthStatus,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

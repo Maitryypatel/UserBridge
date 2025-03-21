@@ -47,16 +47,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Set Secure Cookies for Authentication
-app.use((req, res, next) => {
-  res.cookie("token", req.cookies.token || "", {
-    httpOnly: true,  // Prevents client-side access
-    secure: true,    // Required for HTTPS (Render uses HTTPS)
-    sameSite: "None", //  Allows cross-origin cookies
-  });
-  next();
-});
-
 //  API Routes
 app.get("/", (req, res) => res.send("API is working fine 🚀"));
 app.use("/api/auth", authRouter);
