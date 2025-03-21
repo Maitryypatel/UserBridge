@@ -15,7 +15,7 @@ const Reset = () => {
   const sendOtp = async () => {
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:4000/api/auth/send-reset-otp", { email });
+      const response = await axios.post("https://user-0tey.onrender.com/api/auth/send-reset-otp", { email });
       if (response.data.success) {
         toast.success("OTP sent to your email!");
         setStep(2);
@@ -34,7 +34,7 @@ const Reset = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:4000/api/auth/reset-password", {
+      const response = await axios.post("https://user-0tey.onrender.com/api/auth/reset-password", {
         email,
         otp,
         newPassword,

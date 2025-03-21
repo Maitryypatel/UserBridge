@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
 
 const ProfilePage = () => {
   const { user, setUser } = useAuth();
@@ -41,48 +41,31 @@ const ProfilePage = () => {
     formData.append("name", userData.name);
     formData.append("jobRole", userData.jobRole);
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-        console.error(" No token found! Please log in again.");
-        alert("Session expired. Please log in again.");
-        setIsLoading(false);
-        return;
-    }
-
     try {
-      const response = await axios.put("https://userbridge-2.onrender.com/api/user/update-profile", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true, 
-      });
-      
-
-
-        // const response = await axios.put("http://localhost:4000/api/user/update-profile", formData, {
-        //     headers: {
-        //         "Content-Type": "multipart/form-data",
-        //         Authorization: `Bearer ${token}`,
-        //     },
-        //     withCredentials: true, 
-        // });
-
-        const updatedUser = response.data.user;
-        setUser(updatedUser);
-        setUserData((prev) => ({ ...prev, profilePicture: updatedUser.profilePicture }));
-        setPreview(null);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-    } catch (error) {
-        console.error(" Error updating profile:", error?.response?.data?.message || "Update failed");
-        if (error.response?.status === 401) {
-            alert("Unauthorized. Please log in again.");
+      const response = await axios.put(
+        "https://userbridge-2.onrender.com/api/user/update-profile",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true, // Ensures cookies are sent with the request
         }
-    } finally {
-        setIsLoading(false);
-    }
-};
+      );
 
+      const updatedUser = response.data.user;
+      setUser(updatedUser);
+      setUserData((prev) => ({ ...prev, profilePicture: updatedUser.profilePicture }));
+      setPreview(null);
+    } catch (error) {
+      console.error("Error updating profile:", error?.response?.data?.message || "Update failed");
+      if (error.response?.status === 401) {
+        alert("Unauthorized. Please log in again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -98,7 +81,7 @@ const ProfilePage = () => {
               src={
                 userData.profilePicture.startsWith("https")
                   ? userData.profilePicture
-                  :  `https://userbridge-2.onrender.com/uploads/${userData.profilePicture}`
+                  : `https://userbridge-2.onrender.com/uploads/${userData.profilePicture}`
               }
               alt="Profile"
               className="w-full h-full object-cover"

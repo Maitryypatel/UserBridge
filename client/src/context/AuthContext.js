@@ -134,41 +134,38 @@ export const AuthProvider = ({ children }) => {
     }
   }, [navigate]);
 
-  // ✅ Update Profile Function
-  const updateProfile = useCallback(
-    async (updatedData) => {
-      try {
-        console.log("📝 Updating profile...");
-        const res = await axios.put(
-          `${API_URL}/api/user/update-profile`,
-          updatedData,
-          {
-            withCredentials: true,
-            headers: {
-              "Content-Type": updatedData instanceof FormData ? "multipart/form-data" : "application/json",
-            },
-          }
-        );
+  // ✅ Update Profile Function (Modified to use Cookies)
+  const updateProfile = useCallback(async (updatedData) => {
+    try {
+      console.log("📝 Updating profile...");
 
-        console.log("✅ Update Profile Response:", res.data);
+      let config = {
+        headers: {},
+        withCredentials: true, // Ensure cookies are sent with the request
+      };
 
-        if (res.data.success) {
-          setUser(res.data.user);
-          return { success: true, message: "Profile updated successfully!" };
-        } else {
-          console.warn("⚠️ Profile update failed:", res.data.message);
-          return { success: false, message: res.data.message || "Profile update failed." };
-        }
-      } catch (error) {
-        console.error("❌ Profile update error:", error?.response?.data?.message || "Network error.");
-        return {
-          success: false,
-          message: error?.response?.data?.message || "Profile update failed.",
-        };
+      let res;
+      if (updatedData instanceof FormData) {
+        // If it's FormData (for file uploads), set correct headers
+        config.headers["Content-Type"] = "multipart/form-data";
       }
-    },
-    []
-  );
+
+      res = await axios.put(`${API_URL}/api/user/update-profile`, updatedData, config);
+
+      console.log("✅ Update Profile Response:", res.data);
+
+      if (res.data.success) {
+        setUser(res.data.user); // Update user state
+        return { success: true, message: "Profile updated successfully!" };
+      } else {
+        console.warn(" Profile update failed:", res.data.message);
+        return { success: false, message: res.data.message || "Profile update failed." };
+      }
+    } catch (error) {
+      console.error(" Profile update error:", error?.response?.data?.message || "Network error.");
+      return { success: false, message: error?.response?.data?.message || "Profile update failed." };
+    }
+  }, []);
 
   return (
     <AuthContext.Provider
