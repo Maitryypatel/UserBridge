@@ -56,7 +56,7 @@ const Users = () => {
         {users.length > 0 ? (
           users.map((user) => (
             <div
-              key={user._id || user.id} // Handle both possible IDs
+              key={user._id || user.id} // Handle both possible ids
               className="bg-white border border-gray-200 shadow-lg rounded-lg p-4 hover:shadow-xl transition-all"
             >
               <h2 className="text-xl font-semibold text-gray-900">Name: {user.name}</h2>

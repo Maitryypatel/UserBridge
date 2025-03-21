@@ -12,16 +12,16 @@ import faqRouter from "./routes/faqRoutes.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
-// ✅ Connect to MongoDB
+//  Connect to MongoDB
 connectDB();
 
-// ✅ Create "uploads" directory if it doesn't exist
+//  Create "uploads" directory if it doesn't exist
 const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// ✅ CORS Middleware (Allows cookies and cross-origin requests)
+//  CORS Middleware (Allows cookies and cross-origin requests)
 app.use(
   cors({
     origin: process.env.CLIENT_URL, // Ensure this matches frontend URL
@@ -31,15 +31,15 @@ app.use(
   })
 );
 
-// ✅ Middleware Order Fix
+//  Middleware Order Fix
 app.use(cookieParser()); // First, parse cookies
 app.use(express.json()); // Parse JSON data
 app.use(express.urlencoded({ extended: true })); // Parse form data
 
-// ✅ Serve Static Files
+// Serve Static Files
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-// ✅ Debugging: Log incoming requests
+//  Log incoming requests
 app.use((req, res, next) => {
   console.log(`🔍 Incoming Request: ${req.method} ${req.url}`);
   console.log("Headers:", req.headers);
@@ -47,23 +47,23 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Set Secure Cookies for Authentication
+// Set Secure Cookies for Authentication
 app.use((req, res, next) => {
   res.cookie("token", req.cookies.token || "", {
     httpOnly: true,  // Prevents client-side access
-    secure: true,    // ✅ Required for HTTPS (Render uses HTTPS)
-    sameSite: "None", // ✅ Allows cross-origin cookies
+    secure: true,    // Required for HTTPS (Render uses HTTPS)
+    sameSite: "None", //  Allows cross-origin cookies
   });
   next();
 });
 
-// ✅ API Routes
+//  API Routes
 app.get("/", (req, res) => res.send("API is working fine 🚀"));
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/faq", faqRouter);
 
-console.log("🔍 JWT_SECRET in Render:", process.env.JWT_SECRET ? "Exists ✅" : "Missing ❌");
+console.log(" JWT_SECRET in Render:", process.env.JWT_SECRET ? "Exists " : "Missing ");
 
-// ✅ Start Server
-app.listen(port, () => console.log(`✅ Server started on port ${port}`));
+//  Start Server
+app.listen(port, () => console.log(` Server started on port ${port}`));

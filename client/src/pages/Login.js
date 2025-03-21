@@ -16,22 +16,25 @@ export default function Login() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/auth/login",
+        //"http://localhost:4000/api/auth/login"
+        "https://userbridge-2.onrender.com/api/auth/login",
+
         { email, password },
         { withCredentials: true }
       );
 
       if (response.data.success) {
-        await login(email, password); 
+        await login(email, password);
         toast.success("Login successful!");
-        navigate("/"); 
+        navigate("/");
       } else {
         toast.error(response.data.message || "Invalid credentials");
       }
     } catch (error) {
       console.error("Login error:", error);
       toast.error(
-        error.response?.data?.message || "Something went wrong. Please try again."
+        error.response?.data?.message ||
+          "Something went wrong. Please try again."
       );
     } finally {
       setLoading(false);
@@ -65,7 +68,11 @@ export default function Login() {
           </div>
           <button
             type="submit"
-            className={`w-full text-white p-2 rounded-md ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}`}
+            className={`w-full text-white p-2 rounded-md ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
             disabled={loading}
           >
             {loading ? "Logging in..." : "Login"}

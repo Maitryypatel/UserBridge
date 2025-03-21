@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:4000/api/faq";
+const API_URL = "https://userbridge-2.onrender.com/api/faq";
 
 // ✅ Fetch FAQs with Pagination, Search, and Language
 export const fetchFAQs = async ({ page = 1, limit = 10, search = "", category = "", language = "en" } = {}) => {

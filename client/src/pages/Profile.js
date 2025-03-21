@@ -43,7 +43,7 @@ const ProfilePage = () => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-        console.error("⚠️ No token found! Please log in again.");
+        console.error(" No token found! Please log in again.");
         alert("Session expired. Please log in again.");
         setIsLoading(false);
         return;
@@ -74,7 +74,7 @@ const ProfilePage = () => {
         setPreview(null);
         localStorage.setItem("user", JSON.stringify(updatedUser));
     } catch (error) {
-        console.error("❌ Error updating profile:", error?.response?.data?.message || "Update failed");
+        console.error(" Error updating profile:", error?.response?.data?.message || "Update failed");
         if (error.response?.status === 401) {
             alert("Unauthorized. Please log in again.");
         }
@@ -96,7 +96,7 @@ const ProfilePage = () => {
           ) : userData.profilePicture ? (
             <img
               src={
-                userData.profilePicture.startsWith("http")
+                userData.profilePicture.startsWith("https")
                   ? userData.profilePicture
                   :  `https://userbridge-2.onrender.com/uploads/${userData.profilePicture}`
               }

@@ -10,7 +10,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false); // ✅ Prevent multiple submissions
   const navigate = useNavigate();
 
-  const API_URL = process.env.REACT_APP_API_URL || import.meta.env?.VITE_API_URL || "http://localhost:4000";
+  const API_URL = process.env.REACT_APP_API_URL  || "https://userbridge-2.onrender.com";
 
 
   const handleSubmit = async (e) => {
@@ -39,7 +39,7 @@ export default function Register() {
       console.error("Registration Error:", error);
       toast.error(error.response?.data?.message || "Registration failed! Please try again.");
     } finally {
-      setLoading(false); // ✅ Stop loading state
+      setLoading(false); //  Stop loading state
     }
   };
 
@@ -81,7 +81,7 @@ export default function Register() {
           <button
             type="submit"
             className="w-full bg-green-500 text-white p-2 rounded-md hover:bg-green-600 disabled:bg-gray-400"
-            disabled={loading} // ✅ Disable button during submission
+            disabled={loading} // Disable button during submission
           >
             {loading ? "Registering..." : "Register"} 
           </button>

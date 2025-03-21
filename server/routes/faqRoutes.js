@@ -52,7 +52,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ Get FAQ by ID (Multi-language Support)
+//  Get FAQ by ID (Multi-language Support)
 router.get("/:id", async (req, res) => {
   try {
     const { lang = "en" } = req.query;
@@ -77,7 +77,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// ✅ Update FAQ (Supports Multi-language Fields)
+// Update FAQ (Supports Multi-language Fields)
 router.put("/:id", async (req, res) => {
   try {
     const updatedFaq = await FAQ.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -90,7 +90,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// ✅ Soft Delete FAQ
+// ✅Soft Delete FAQ
 // router.delete("/:id", async (req, res) => {
 //   try {
 //     const faq = await FAQ.findByIdAndUpdate(req.params.id, { deleted: true }, { new: true });

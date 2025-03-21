@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
 
       return res.data;
     } catch (error) {
-      console.error("❌ Login failed:", error?.response?.data?.message || "Network error.");
+      console.error(" Login failed:", error?.response?.data?.message || "Network error.");
       return { success: false, message: error?.response?.data?.message || "Login failed. Please try again." };
     }
   }, [navigate]);
@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }) => {
 
       return res.data;
     } catch (error) {
-      console.error("❌ Registration failed:", error?.response?.data?.message || "Network error.");
+      console.error(" Registration failed:", error?.response?.data?.message || "Network error.");
       return { success: false, message: error?.response?.data?.message || "Registration failed. Please try again." };
     }
   }, [navigate]);
@@ -128,7 +128,7 @@ export const AuthProvider = ({ children }) => {
       console.log("📝 Updating profile...");
       const token = localStorage.getItem("token");
       if (!token) {
-        console.warn("⚠️ No authentication token found!");
+        console.warn(" No authentication token found!");
         return { success: false, message: "Unauthorized. Please log in again." };
       }
 
@@ -147,17 +147,17 @@ export const AuthProvider = ({ children }) => {
         res = await axios.put(`${API_URL}/api/user/update-profile`, updatedData, config);
       }
 
-      console.log("✅ Update Profile Response:", res.data);
+      console.log(" Update Profile Response:", res.data);
 
       if (res.data.success) {
         setUser(res.data.user);
         return { success: true, message: "Profile updated successfully!" };
       } else {
-        console.warn("⚠️ Profile update failed:", res.data.message);
+        console.warn(" Profile update failed:", res.data.message);
         return { success: false, message: res.data.message || "Profile update failed." };
       }
     } catch (error) {
-      console.error("❌ Profile update error:", error?.response?.data?.message || "Network error.");
+      console.error("Profile update error:", error?.response?.data?.message || "Network error.");
       return { success: false, message: error?.response?.data?.message || "Profile update failed." };
     }
   }, []);

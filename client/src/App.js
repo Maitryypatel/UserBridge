@@ -15,7 +15,7 @@ import Navbar from "./components/Navbar";
 import { LanguageProvider } from "./context/LanguageContext";
 import { useAuth } from "./context/AuthContext";
 
-// ✅ Protected Route Wrapper
+//  Protected Route Wrapper
 const ProtectedLayout = () => {
   const { isAuthenticated, loading } = useAuth();
 
@@ -42,13 +42,13 @@ const App = () => {
     <LanguageProvider>
       {shouldShowNavbar && <Navbar />}
       <Routes>
-        {/* ✅ Public Routes */}
+        {/*  Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/email-verify" element={<EmailVerify />} />
         <Route path="/reset-password" element={<Reset />} /> 
 
-        {/* ✅ Protected Routes */}
+        {/*  Protected Routes */}
         <Route element={<ProtectedLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/faq-list" element={<FAQList />} />
