@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext"; // Removed unused axios import
 
 const ProfilePage = () => {
-  const { user, setUser } = useAuth();
+  const { user, updateProfile } = useAuth(); // Removed unused setUser
   const [userData, setUserData] = useState({
     name: "",
     email: "",
@@ -15,6 +14,7 @@ const ProfilePage = () => {
   const [preview, setPreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Initialize user data when the component mounts or user changes
   useEffect(() => {
     if (user) {
       setUserData({
@@ -36,36 +36,25 @@ const ProfilePage = () => {
   // Handle profile update
   const handleProfileUpdate = async () => {
     setIsLoading(true);
+
     const formData = new FormData();
     if (image) formData.append("profilePicture", image);
     formData.append("name", userData.name);
     formData.append("jobRole", userData.jobRole);
 
     try {
-      const response = await axios.put(
-        "https://userbridge-2.onrender.com/api/user/update-profile",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true, // Ensures cookies are sent with the request
-        }
-      );
+      // Use the updateProfile function from AuthContext
+      const result = await updateProfile(formData);
 
-      const updatedUser = response.data.user;
-      setUser(updatedUser); // Update user in AuthContext
-      setUserData((prev) => ({ ...prev, profilePicture: updatedUser.profilePicture }));
-      setPreview(null);
-      alert("Profile updated successfully!");
-    } catch (error) {
-      console.error("Error updating profile:", error?.response?.data?.message || "Update failed");
-      if (error.response?.status === 401) {
-        alert("Unauthorized. Please log in again.");
-        window.location.href = "/login"; // Redirect to login page
+      if (result.success) {
+        alert("Profile updated successfully!");
+        setPreview(null); // Clear preview after successful update
       } else {
-        alert(error?.response?.data?.message || "An error occurred while updating the profile.");
+        alert(result.message || "Profile update failed.");
       }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("An error occurred while updating the profile.");
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +74,7 @@ const ProfilePage = () => {
               src={
                 userData.profilePicture.startsWith("https")
                   ? userData.profilePicture
-                  : `https://userbridge-2.onrender.com/uploads/${userData.profilePicture}`
+                  : `${process.env.REACT_APP_API_URL}/uploads/${userData.profilePicture}`
               }
               alt="Profile"
               className="w-full h-full object-cover"

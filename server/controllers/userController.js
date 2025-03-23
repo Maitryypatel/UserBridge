@@ -8,11 +8,11 @@ export const updateUserProfile = async (req, res) => {
 
     // Ensure user is authenticated
     if (!req.user || !req.user.id) {
-      return res.status(401).json({ success: false, message: "User not authenticated" });
+      return res.status(401).json({ success: false, message: "User not authenticated. Please log in again." });
     }
 
-    const userId = req.user.id; 
-    const { jobRole } = req.body;
+    const userId = req.user.id;
+    const { name, jobRole } = req.body;
 
     // Check uploaded file
     const profilePicture = req.file ? req.file.filename : null;
@@ -30,12 +30,22 @@ export const updateUserProfile = async (req, res) => {
     }
 
     // Update the user profile fields
+    if (name) user.name = name;
     if (jobRole) user.jobRole = jobRole;
     if (profilePicture) user.profilePicture = profilePicture;
 
     await user.save();
 
-    res.status(200).json({ success: true, message: "Profile updated successfully", user });
+    // Return updated user data (excluding sensitive fields like password)
+    const updatedUser = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      profilePicture: user.profilePicture,
+      jobRole: user.jobRole,
+    };
+
+    res.status(200).json({ success: true, message: "Profile updated successfully", user: updatedUser });
   } catch (error) {
     console.error("❌ Error updating user profile:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -45,16 +55,10 @@ export const updateUserProfile = async (req, res) => {
 // Get all users (for admin or listing)
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await userModel.find({});
+    const users = await userModel.find({}).select("-password"); // Exclude passwords
     res.status(200).json({ success: true, users });
   } catch (error) {
-    console.error(" Error fetching users:", error);
+    console.error("❌ Error fetching users:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
-
-
-
-//git filter-branch --force --index-filter "git rm --cached --ignore-unmatch server/.env" --prune-empty --tag-name-filter cat -- --all
-//>> git push origin --force --all

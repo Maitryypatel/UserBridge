@@ -84,6 +84,30 @@ export const AuthProvider = ({ children }) => {
     [navigate]
   );
 
+  const logout = useCallback(async () => {
+    try {
+      console.log("🚪 Attempting logout...");
+      const res = await axios.post(
+        `${API_URL}/api/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      console.log("✅ Logout Response:", res.data);
+
+      if (res.data.success) {
+        setIsAuthenticated(false);
+        setUser(null);
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("❌ Logout failed:", error?.response?.data?.message || "Network error.");
+    }
+  }, [navigate]);
+
   const updateProfile = useCallback(async (updatedData) => {
     setLoading(true);
     try {
@@ -122,6 +146,7 @@ export const AuthProvider = ({ children }) => {
         user,
         setUser,
         login,
+        logout,
         updateProfile,
         loading,
         checkAuthStatus,
